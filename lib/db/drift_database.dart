@@ -47,8 +47,12 @@ class PatGestDatabase extends _$PatGestDatabase {
   @override
   int get schemaVersion => 1;
 
-  Stream<List<Patient>> watchPatients() {
+  Stream<List<Patient>> watchPatientsList() {
     return (select(patients)).watch();
+  }
+
+  Stream<Patient> watchPatient(int id) {
+    return (select(patients)..where((tbl) => tbl.id.equals(id))).watchSingle();
   }
 }
 

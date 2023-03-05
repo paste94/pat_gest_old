@@ -27,9 +27,14 @@ class CrudService {
     return db;
   }
 
-  Stream<List<Patient>> getPatientsStream() {
+  Stream<List<Patient>> getPatientsListStream() {
     final db = _getDatabaseOrThrow();
-    return db.watchPatients();
+    return db.watchPatientsList();
+  }
+
+  Stream<Patient> getPatientStream({required int id}) {
+    final db = _getDatabaseOrThrow();
+    return db.watchPatient(id);
   }
 
   Future<void> open() async {

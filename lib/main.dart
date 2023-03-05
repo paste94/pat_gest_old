@@ -4,6 +4,7 @@ import 'package:pat_gest/services/crud_service.dart';
 import 'package:pat_gest/views/patients/add_patient_view.dart';
 import 'package:pat_gest/views/home_view.dart';
 import 'package:pat_gest/views/patients/patient_list_view.dart';
+import 'package:pat_gest/views/patients/patient_view.dart';
 import 'package:pat_gest/views/splash_view.dart';
 
 void main() {
@@ -17,6 +18,7 @@ void main() {
       homeRoute: (context) => const HomeView(),
       patientListRoute: (context) => const PatientListView(),
       addPatientRoute: (context) => const AddPatientView(),
+      patientRoute: (context) => const PatientView(),
     },
   ));
 }

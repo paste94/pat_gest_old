@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pat_gest/constants/routes.dart';
 import 'package:pat_gest/db/drift_database.dart';
 import 'package:pat_gest/services/crud_service.dart';
 
@@ -13,10 +14,10 @@ class _PatientsListState extends State<PatientsList> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: CrudService().getPatientsStream(),
+      stream: CrudService().getPatientsListStream(),
       builder: (BuildContext context, AsyncSnapshot<List<Patient>> snapshot) {
         if (snapshot.hasData) {
-          final patientsList = snapshot.data!;
+          final patientsList = snapshot.data ?? [];
           if (patientsList.isEmpty) {
             return const Center(
               child: Text(
@@ -38,7 +39,10 @@ class _PatientsListState extends State<PatientsList> {
                         title: Text(
                             '${patientsList[index].name} ${patientsList[index].surname}'),
                         onTap: () {
-                          debugPrint(patientsList[index].toString());
+                          Navigator.of(context).pushNamed(
+                            patientRoute,
+                            arguments: patientsList[index].id,
+                          );
                         },
                       ),
                       const Divider(),
