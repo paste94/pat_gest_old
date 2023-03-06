@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pat_gest/constants/routes.dart';
 import 'package:pat_gest/services/crud_service.dart';
+import 'package:pat_gest/utils/pat_gest_drawer.dart';
+import 'package:pat_gest/views/foods/foods_list_view.dart';
+import 'package:pat_gest/views/offices/offices_list_view.dart';
+import 'package:pat_gest/views/options/options_view.dart';
 import 'package:pat_gest/views/patients/add_patient_view.dart';
-import 'package:pat_gest/views/home_view.dart';
 import 'package:pat_gest/views/patients/patient_list_view.dart';
 import 'package:pat_gest/views/patients/patient_view.dart';
 import 'package:pat_gest/views/splash_view.dart';
@@ -15,10 +18,12 @@ void main() {
     ),
     home: const HomePage(),
     routes: {
-      homeRoute: (context) => const HomeView(),
       patientListRoute: (context) => const PatientListView(),
       addPatientRoute: (context) => const AddPatientView(),
       patientRoute: (context) => const PatientView(),
+      foodListRoute: (context) => const FoodsListView(),
+      officeListRoute: (context) => const OfficesListView(),
+      optionsRoute: (context) => const OptionsView(),
     },
   ));
 }
@@ -31,8 +36,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String _currentRoute = homeRoute;
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -40,10 +43,11 @@ class _HomePageState extends State<HomePage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
+            drawer: const PatGestDrawer(),
             appBar: AppBar(
-              title: Text('PatGest'),
+              title: const Text('PatGest'),
             ),
-            body: Center(
+            body: const Center(
               child: Text('HOME'),
             ),
           );
@@ -54,29 +58,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-/*
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: CrudService().open(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('PatGest'),
-            ),
-            body: Center(
-              child: Text('HOME'),
-            ),
-          );
-        } else {
-          return const SplashView();
-        }
-      },
-    );
-  }
-}
-*/
