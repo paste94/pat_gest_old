@@ -23,6 +23,38 @@ void main() {
   ));
 }
 
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String _currentRoute = homeRoute;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: CrudService().open(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('PatGest'),
+            ),
+            body: Center(
+              child: Text('HOME'),
+            ),
+          );
+        } else {
+          return const SplashView();
+        }
+      },
+    );
+  }
+}
+/*
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -32,7 +64,14 @@ class HomePage extends StatelessWidget {
       future: CrudService().open(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          return const HomeView();
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('PatGest'),
+            ),
+            body: Center(
+              child: Text('HOME'),
+            ),
+          );
         } else {
           return const SplashView();
         }
@@ -40,3 +79,4 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+*/
