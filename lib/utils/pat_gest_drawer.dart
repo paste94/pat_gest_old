@@ -1,9 +1,16 @@
+/*
 import 'package:flutter/material.dart';
 import 'package:pat_gest/constants/routes.dart';
 
-class PatGestDrawer extends StatelessWidget {
-  const PatGestDrawer({super.key});
+class PatGestDrawer extends StatefulWidget {
+  final Function(DrawerPage) onSelectPage;
+  const PatGestDrawer({super.key, required this.onSelectPage});
 
+  @override
+  State<PatGestDrawer> createState() => _PatGestDrawerState();
+}
+
+class _PatGestDrawerState extends State<PatGestDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -19,6 +26,7 @@ class PatGestDrawer extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) => Container();
+
   Widget _buildMenuItems(BuildContext context) => Column(
         children: [
           ListTile(
@@ -26,7 +34,7 @@ class PatGestDrawer extends StatelessWidget {
             title: const Text('Patients'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).pushReplacementNamed(patientListRoute);
+              widget.onSelectPage(DrawerPage.patientsList);
             },
           ),
           ListTile(
@@ -34,7 +42,7 @@ class PatGestDrawer extends StatelessWidget {
             title: const Text('Offices'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).pushReplacementNamed(officeListRoute);
+              widget.onSelectPage(DrawerPage.officesList);
             },
           ),
           ListTile(
@@ -42,7 +50,7 @@ class PatGestDrawer extends StatelessWidget {
             title: const Text('Foods'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).pushReplacementNamed(foodListRoute);
+              widget.onSelectPage(DrawerPage.foodList);
             },
           ),
           ListTile(
@@ -50,9 +58,10 @@ class PatGestDrawer extends StatelessWidget {
             title: const Text('Options'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).pushReplacementNamed(optionsRoute);
+              widget.onSelectPage(DrawerPage.options);
             },
           ),
         ],
       );
 }
+*/

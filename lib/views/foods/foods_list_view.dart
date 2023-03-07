@@ -12,12 +12,8 @@ class FoodsListView extends StatefulWidget {
 class _FoodsListViewState extends State<FoodsListView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Food List')),
-      drawer: const PatGestDrawer(),
-      body: const Center(
-        child: Text('FOOD LIST'),
-      ),
+    return const Center(
+      child: Text('FOOD LIST'),
     );
   }
 }

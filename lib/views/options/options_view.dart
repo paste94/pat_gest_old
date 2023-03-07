@@ -12,12 +12,8 @@ class OptionsView extends StatefulWidget {
 class _OptionsViewState extends State<OptionsView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Options')),
-      drawer: const PatGestDrawer(),
-      body: const Center(
-        child: Text('OPTIONS'),
-      ),
+    return const Center(
+      child: Text('OPTIONS'),
     );
   }
 }

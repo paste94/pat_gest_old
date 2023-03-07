@@ -12,12 +12,8 @@ class OfficesListView extends StatefulWidget {
 class _OfficesListViewState extends State<OfficesListView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Offices List')),
-      drawer: const PatGestDrawer(),
-      body: const Center(
-        child: Text('OFFICES LIST'),
-      ),
+    return const Center(
+      child: Text('OFFICES LIST'),
     );
   }
 }
