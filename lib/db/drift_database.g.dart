@@ -44,9 +44,40 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
   late final GeneratedColumn<String> note = GeneratedColumn<String>(
       'note', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _heightMeta = const VerificationMeta('height');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, surname, email, phoneNumber, note];
+  late final GeneratedColumn<double> height = GeneratedColumn<double>(
+      'height', aliasedName, true,
+      check: () => height.isBiggerOrEqualValue(0),
+      type: DriftSqlType.double,
+      requiredDuringInsert: false);
+  static const VerificationMeta _weightMeta = const VerificationMeta('weight');
+  @override
+  late final GeneratedColumn<double> weight = GeneratedColumn<double>(
+      'weight', aliasedName, true,
+      check: () => weight.isBiggerOrEqualValue(0),
+      type: DriftSqlType.double,
+      requiredDuringInsert: false);
+  static const VerificationMeta _dateOfBirthMeta =
+      const VerificationMeta('dateOfBirth');
+  @override
+  late final GeneratedColumn<DateTime> dateOfBirth = GeneratedColumn<DateTime>(
+      'date_of_birth', aliasedName, true,
+      check: () => dateOfBirth.isBiggerThan(Constant(DateTime(1900))),
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        surname,
+        email,
+        phoneNumber,
+        note,
+        height,
+        weight,
+        dateOfBirth
+      ];
   @override
   String get aliasedName => _alias ?? 'patients';
   @override
@@ -81,6 +112,20 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
       context.handle(
           _noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
     }
+    if (data.containsKey('height')) {
+      context.handle(_heightMeta,
+          height.isAcceptableOrUnknown(data['height']!, _heightMeta));
+    }
+    if (data.containsKey('weight')) {
+      context.handle(_weightMeta,
+          weight.isAcceptableOrUnknown(data['weight']!, _weightMeta));
+    }
+    if (data.containsKey('date_of_birth')) {
+      context.handle(
+          _dateOfBirthMeta,
+          dateOfBirth.isAcceptableOrUnknown(
+              data['date_of_birth']!, _dateOfBirthMeta));
+    }
     return context;
   }
 
@@ -102,6 +147,12 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
           .read(DriftSqlType.string, data['${effectivePrefix}phone_number']),
       note: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}note']),
+      height: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}height']),
+      weight: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}weight']),
+      dateOfBirth: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_of_birth']),
     );
   }
 
@@ -118,13 +169,19 @@ class Patient extends DataClass implements Insertable<Patient> {
   final String? email;
   final String? phoneNumber;
   final String? note;
+  final double? height;
+  final double? weight;
+  final DateTime? dateOfBirth;
   const Patient(
       {required this.id,
       this.name,
       this.surname,
       this.email,
       this.phoneNumber,
-      this.note});
+      this.note,
+      this.height,
+      this.weight,
+      this.dateOfBirth});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -144,6 +201,15 @@ class Patient extends DataClass implements Insertable<Patient> {
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
     }
+    if (!nullToAbsent || height != null) {
+      map['height'] = Variable<double>(height);
+    }
+    if (!nullToAbsent || weight != null) {
+      map['weight'] = Variable<double>(weight);
+    }
+    if (!nullToAbsent || dateOfBirth != null) {
+      map['date_of_birth'] = Variable<DateTime>(dateOfBirth);
+    }
     return map;
   }
 
@@ -160,6 +226,13 @@ class Patient extends DataClass implements Insertable<Patient> {
           ? const Value.absent()
           : Value(phoneNumber),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      height:
+          height == null && nullToAbsent ? const Value.absent() : Value(height),
+      weight:
+          weight == null && nullToAbsent ? const Value.absent() : Value(weight),
+      dateOfBirth: dateOfBirth == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dateOfBirth),
     );
   }
 
@@ -173,6 +246,9 @@ class Patient extends DataClass implements Insertable<Patient> {
       email: serializer.fromJson<String?>(json['email']),
       phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
       note: serializer.fromJson<String?>(json['note']),
+      height: serializer.fromJson<double?>(json['height']),
+      weight: serializer.fromJson<double?>(json['weight']),
+      dateOfBirth: serializer.fromJson<DateTime?>(json['dateOfBirth']),
     );
   }
   @override
@@ -185,6 +261,9 @@ class Patient extends DataClass implements Insertable<Patient> {
       'email': serializer.toJson<String?>(email),
       'phoneNumber': serializer.toJson<String?>(phoneNumber),
       'note': serializer.toJson<String?>(note),
+      'height': serializer.toJson<double?>(height),
+      'weight': serializer.toJson<double?>(weight),
+      'dateOfBirth': serializer.toJson<DateTime?>(dateOfBirth),
     };
   }
 
@@ -194,7 +273,10 @@ class Patient extends DataClass implements Insertable<Patient> {
           Value<String?> surname = const Value.absent(),
           Value<String?> email = const Value.absent(),
           Value<String?> phoneNumber = const Value.absent(),
-          Value<String?> note = const Value.absent()}) =>
+          Value<String?> note = const Value.absent(),
+          Value<double?> height = const Value.absent(),
+          Value<double?> weight = const Value.absent(),
+          Value<DateTime?> dateOfBirth = const Value.absent()}) =>
       Patient(
         id: id ?? this.id,
         name: name.present ? name.value : this.name,
@@ -202,6 +284,9 @@ class Patient extends DataClass implements Insertable<Patient> {
         email: email.present ? email.value : this.email,
         phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
         note: note.present ? note.value : this.note,
+        height: height.present ? height.value : this.height,
+        weight: weight.present ? weight.value : this.weight,
+        dateOfBirth: dateOfBirth.present ? dateOfBirth.value : this.dateOfBirth,
       );
   @override
   String toString() {
@@ -211,13 +296,17 @@ class Patient extends DataClass implements Insertable<Patient> {
           ..write('surname: $surname, ')
           ..write('email: $email, ')
           ..write('phoneNumber: $phoneNumber, ')
-          ..write('note: $note')
+          ..write('note: $note, ')
+          ..write('height: $height, ')
+          ..write('weight: $weight, ')
+          ..write('dateOfBirth: $dateOfBirth')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, surname, email, phoneNumber, note);
+  int get hashCode => Object.hash(
+      id, name, surname, email, phoneNumber, note, height, weight, dateOfBirth);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -227,7 +316,10 @@ class Patient extends DataClass implements Insertable<Patient> {
           other.surname == this.surname &&
           other.email == this.email &&
           other.phoneNumber == this.phoneNumber &&
-          other.note == this.note);
+          other.note == this.note &&
+          other.height == this.height &&
+          other.weight == this.weight &&
+          other.dateOfBirth == this.dateOfBirth);
 }
 
 class PatientsCompanion extends UpdateCompanion<Patient> {
@@ -237,6 +329,9 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
   final Value<String?> email;
   final Value<String?> phoneNumber;
   final Value<String?> note;
+  final Value<double?> height;
+  final Value<double?> weight;
+  final Value<DateTime?> dateOfBirth;
   const PatientsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -244,6 +339,9 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     this.email = const Value.absent(),
     this.phoneNumber = const Value.absent(),
     this.note = const Value.absent(),
+    this.height = const Value.absent(),
+    this.weight = const Value.absent(),
+    this.dateOfBirth = const Value.absent(),
   });
   PatientsCompanion.insert({
     this.id = const Value.absent(),
@@ -252,6 +350,9 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     this.email = const Value.absent(),
     this.phoneNumber = const Value.absent(),
     this.note = const Value.absent(),
+    this.height = const Value.absent(),
+    this.weight = const Value.absent(),
+    this.dateOfBirth = const Value.absent(),
   });
   static Insertable<Patient> custom({
     Expression<int>? id,
@@ -260,6 +361,9 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     Expression<String>? email,
     Expression<String>? phoneNumber,
     Expression<String>? note,
+    Expression<double>? height,
+    Expression<double>? weight,
+    Expression<DateTime>? dateOfBirth,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -268,6 +372,9 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       if (email != null) 'email': email,
       if (phoneNumber != null) 'phone_number': phoneNumber,
       if (note != null) 'note': note,
+      if (height != null) 'height': height,
+      if (weight != null) 'weight': weight,
+      if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
     });
   }
 
@@ -277,7 +384,10 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       Value<String?>? surname,
       Value<String?>? email,
       Value<String?>? phoneNumber,
-      Value<String?>? note}) {
+      Value<String?>? note,
+      Value<double?>? height,
+      Value<double?>? weight,
+      Value<DateTime?>? dateOfBirth}) {
     return PatientsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -285,6 +395,9 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       email: email ?? this.email,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       note: note ?? this.note,
+      height: height ?? this.height,
+      weight: weight ?? this.weight,
+      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
     );
   }
 
@@ -309,6 +422,15 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     if (note.present) {
       map['note'] = Variable<String>(note.value);
     }
+    if (height.present) {
+      map['height'] = Variable<double>(height.value);
+    }
+    if (weight.present) {
+      map['weight'] = Variable<double>(weight.value);
+    }
+    if (dateOfBirth.present) {
+      map['date_of_birth'] = Variable<DateTime>(dateOfBirth.value);
+    }
     return map;
   }
 
@@ -320,7 +442,10 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
           ..write('surname: $surname, ')
           ..write('email: $email, ')
           ..write('phoneNumber: $phoneNumber, ')
-          ..write('note: $note')
+          ..write('note: $note, ')
+          ..write('height: $height, ')
+          ..write('weight: $weight, ')
+          ..write('dateOfBirth: $dateOfBirth')
           ..write(')'))
         .toString();
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pat_gest/db/drift_database.dart';
 import 'package:pat_gest/services/crud_service.dart';
 
 class PatientView extends StatefulWidget {
@@ -24,61 +23,12 @@ class _PatientViewState extends State<PatientView> {
         final patient = snapshot.data;
         return Scaffold(
           appBar: AppBar(
-              title: Text(
-                  '${patient?.name ?? 'NONE'} ${patient?.surname ?? 'NONE'}')),
+            title: Text(
+                '${patient?.name ?? 'NONE'} ${patient?.surname ?? 'NONE'}'),
+          ),
+          body: Center(),
         );
       },
     );
-
-    /*
-    if (patientId == null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('ERROR'),
-          backgroundColor: Colors.red,
-        ),
-        body: const Center(
-          child: Text('NONE'),
-        ),
-      );
-    }
-    return Scaffold(
-        appBar: AppBar(title: const Text('Patient')),
-        body: StreamBuilder(
-          stream: CrudService().getPatientStream(id: patientId),
-          builder: (context, snapshot) {
-            return const Center(
-                child: Column(
-              children: [
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-                Text('data'),
-              ],
-            ));
-          },
-        ));
-        */
   }
 }
