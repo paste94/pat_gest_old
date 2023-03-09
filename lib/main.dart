@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:pat_gest/constants/routes.dart';
 import 'package:pat_gest/services/crud_service.dart';
@@ -11,6 +9,7 @@ import 'package:pat_gest/views/patients/add_patient_view.dart';
 import 'package:pat_gest/views/patients/patient_list_view.dart';
 import 'package:pat_gest/views/patients/patient_view.dart';
 import 'package:pat_gest/views/splash_view.dart';
+import 'package:pat_gest/views/visits/visits_view.dart';
 
 final _destinations = <MyNavigationRailDestination>[
   MyNavigationRailDestination(
@@ -27,6 +26,11 @@ final _destinations = <MyNavigationRailDestination>[
     icon: const Icon(Icons.food_bank),
     label: const Text('Foods'),
     pageToLoad: const FoodsListView(),
+  ),
+  MyNavigationRailDestination(
+    icon: const Icon(Icons.calendar_month),
+    label: const Text('Calendar'),
+    pageToLoad: const VisitsView(),
   ),
   MyNavigationRailDestination(
     icon: const Icon(Icons.settings),

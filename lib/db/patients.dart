@@ -13,8 +13,6 @@ class Patients extends Table {
   TextColumn get note => text().nullable()();
   RealColumn get height =>
       real().check(height.isBiggerOrEqualValue(0)).nullable()();
-  RealColumn get weight =>
-      real().check(weight.isBiggerOrEqualValue(0)).nullable()();
   DateTimeColumn get dateOfBirth => dateTime()
       .check(dateOfBirth.isBiggerThan(Constant(DateTime(1900))))
       .nullable()();

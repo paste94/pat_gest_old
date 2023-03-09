@@ -2,13 +2,14 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:flutter/foundation.dart';
-import 'package:pat_gest/db/patients.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/material.dart' show Color, Colors;
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import 'foods.dart';
 import 'offices.dart';
+import 'patients.dart';
+import 'visits.dart';
 
 // https://drift.simonbinder.eu/docs/getting-started/
 // flutter pub run build_runner build
@@ -19,7 +20,7 @@ part 'drift_database.g.dart';
 
 // this annotation tells drift to prepare a database class that uses both of the
 // tables we just defined. We'll see how to use that database class in a moment.
-@DriftDatabase(tables: [Patients, Offices, Foods])
+@DriftDatabase(tables: [Patients, Offices, Foods, Visits])
 class PatGestDatabase extends _$PatGestDatabase {
   // we tell the database where to store the data with this constructor
   PatGestDatabase() : super(_openConnection());
@@ -36,6 +37,14 @@ class PatGestDatabase extends _$PatGestDatabase {
   Stream<Patient> watchPatient(int id) {
     return (select(patients)..where((tbl) => tbl.id.equals(id))).watchSingle();
   }
+
+  Stream<List<Visit>> watchVisitsList() {
+    return (select(visits)).watch();
+  }
+
+  Stream<Visit> watchVisit(int id) {
+    return (select(visits)..where((tbl) => tbl.id.equals(id))).watchSingle();
+  }
 }
 
 LazyDatabase _openConnection() {
@@ -45,7 +54,6 @@ LazyDatabase _openConnection() {
     // for your app.
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'PatGestData', 'db.sqlite'));
-    debugPrint(file.toString());
     return NativeDatabase.createInBackground(file);
   });
 }
