@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pat_gest/constants/strings.dart';
 import 'package:pat_gest/services/crud_service.dart';
 import 'package:pat_gest/utils/patient_validator.dart';
 import 'package:pat_gest/utils/text_divider.dart';
@@ -18,9 +19,9 @@ class _AddPatientViewState extends State<AddPatientView> {
   final _phoneNumberController = TextEditingController();
   final _notesController = TextEditingController();
   final _heightController = TextEditingController();
-  final _weightController = TextEditingController();
+  final _initialWeightController = TextEditingController();
   final _dateController = TextEditingController(
-      text: DateFormat('dd/MM/yyyy').format(DateTime.now()));
+      text: DateFormat(dateFormatConst).format(DateTime.now()));
   final _spacing = 10.0;
   var _submitted = false;
 
@@ -32,7 +33,7 @@ class _AddPatientViewState extends State<AddPatientView> {
     _phoneNumberController.dispose();
     _notesController.dispose();
     _heightController.dispose();
-    _weightController.dispose();
+    _initialWeightController.dispose();
     _dateController.dispose();
     super.dispose();
   }
@@ -121,7 +122,7 @@ class _AddPatientViewState extends State<AddPatientView> {
 
                       if (pickedDate != null) {
                         _dateController.text =
-                            DateFormat('dd/MM/yyyy').format(pickedDate);
+                            DateFormat(dateFormatConst).format(pickedDate);
                       }
                     },
                     icon: const Icon(Icons.calendar_month),
@@ -147,13 +148,13 @@ class _AddPatientViewState extends State<AddPatientView> {
                   SizedBox(width: _spacing),
                   Expanded(
                     child: TextField(
-                      controller: _weightController,
+                      controller: _initialWeightController,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: 'Weight*',
+                        labelText: 'Initial Weight*',
                         suffix: const Text('Kg'),
                         errorText: _submitted
-                            ? weightValidator(_weightController.text)
+                            ? weightValidator(_initialWeightController.text)
                             : null,
                       ),
                     ),
@@ -186,7 +187,7 @@ class _AddPatientViewState extends State<AddPatientView> {
               emailValidator(_emailController.text) != null ||
               dateValidator(_dateController.text) != null ||
               heightValidator(_heightController.text) != null ||
-              weightValidator(_weightController.text) != null) {
+              weightValidator(_initialWeightController.text) != null) {
             loadPatient = false;
           }
 
@@ -220,7 +221,10 @@ class _AddPatientViewState extends State<AddPatientView> {
               surname: _surnameController.text,
               email: _emailController.text,
               phoneNumber: _phoneNumberController.text,
-              note: _notesController.text,
+              notes: _notesController.text,
+              dateOfBirth: DateTime.parse(_dateController.text),
+              height: double.parse(_heightController.text),
+              initialWeight: double.parse(_initialWeightController.text),
             );
 
             // close the dialog automatically

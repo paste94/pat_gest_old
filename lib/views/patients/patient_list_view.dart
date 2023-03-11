@@ -15,6 +15,7 @@ class _PatientListViewState extends State<PatientListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Patients List')),
       body: _listBuilder(context),
       floatingActionButton: FloatingActionButton(
         heroTag: 'uniqueTag',

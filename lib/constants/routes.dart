@@ -5,3 +5,4 @@ const patientRoute = '/patient';
 const officeListRoute = '/office_list';
 const foodListRoute = '/food_list';
 const optionsRoute = '/options';
+const addVisitRoute = '/add_visit';

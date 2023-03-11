@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pat_gest/constants/routes.dart';
 import 'package:pat_gest/db/drift_database.dart';
+import 'package:pat_gest/services/crud_service.dart';
 import 'package:pat_gest/views/visits/visits_data_source.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -12,70 +14,77 @@ class VisitsView extends StatefulWidget {
 
 class _VisitsViewState extends State<VisitsView> {
   //TODO: Cambia questo con un default selezionabile dalle opzioni
-  var _calendarView = CalendarView.month;
+  final _calendarView = CalendarView.month;
   final _firstDayOfWeek = 1;
+  final _calendarController = CalendarController();
+  VisitsDataSource? _events = VisitsDataSource(<Visit>[]);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Visit Calendar'),
+        leading: _calendarController.view == CalendarView.day
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => setState(() {
+                  _calendarController.view = CalendarView.month;
+                }),
+              )
+            : IconButton(
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Theme.of(context).primaryColor,
+                ),
+                enableFeedback: false,
+                onPressed: null,
+              ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'addVisitTag',
+        onPressed: () {
+          Navigator.of(context).pushNamed(addVisitRoute);
+        },
+        child: const Icon(Icons.add),
+      ),
       body: SfCalendar(
         firstDayOfWeek: _firstDayOfWeek,
         showNavigationArrow: true,
-        allowedViews: CalendarView.values,
         view: _calendarView,
-        dataSource: VisitDataSource(_getDataSource()),
+        controller: _calendarController,
+        showDatePickerButton: true,
+        allowViewNavigation: true,
+        onLongPress: (CalendarLongPressDetails calendarLongPressDetails) {},
+        onTap: (CalendarTapDetails calendarTapDetails) async {
+          print(_calendarController);
+          if (_calendarController.selectedDate?.hour != 0) {
+            // TODO: Aggiungi la view add
+          }
+          setState(() {});
+        },
+        dataSource: _getCalendarDataSource(),
+        // allowDragAndDrop: true,
         monthViewSettings: const MonthViewSettings(
-            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
+          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+        ),
       ),
     );
   }
 
-  List<Visit> _getDataSource() {
-    final List<Visit> visits = <Visit>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime =
-        DateTime(today.year, today.month, today.day, 9, 0, 0);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-    visits.add(Visit(
-      eventName: 'eventName',
-      isAllDay: false,
+  VisitsDataSource _getCalendarDataSource() {
+    List<Visit> appointments = <Visit>[];
+    appointments.add(Visit(
       id: 1,
+      eventName: 'CIAOOOO',
       patientId: 1,
-      from: today,
-      to: endTime,
+      isAllDay: false,
+      from: DateTime.now(),
+      to: DateTime.now().add(
+        const Duration(hours: 2),
+      ),
       background: Colors.blue,
     ));
-    return visits;
-  }
-}
 
-class VisitDataSource extends CalendarDataSource {
-  VisitDataSource(List<Visit> source) {
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index) {
-    return appointments![index].from;
-  }
-
-  @override
-  DateTime getEndTime(int index) {
-    return appointments![index].to;
-  }
-
-  @override
-  String getSubject(int index) {
-    return appointments![index].eventName;
-  }
-
-  @override
-  Color getColor(int index) {
-    return appointments![index].background;
-  }
-
-  @override
-  bool isAllDay(int index) {
-    return appointments![index].isAllDay;
+    return VisitsDataSource(appointments);
   }
 }

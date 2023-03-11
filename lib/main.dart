@@ -11,6 +11,8 @@ import 'package:pat_gest/views/patients/patient_view.dart';
 import 'package:pat_gest/views/splash_view.dart';
 import 'package:pat_gest/views/visits/visits_view.dart';
 
+import 'views/visits/add_visit_view.dart';
+
 final _destinations = <MyNavigationRailDestination>[
   MyNavigationRailDestination(
     icon: const Icon(Icons.person),
@@ -49,6 +51,7 @@ void main() {
     routes: {
       addPatientRoute: (context) => const AddPatientView(),
       patientRoute: (context) => const PatientView(),
+      addVisitRoute: (context) => const AddVisitView(),
     },
   ));
 }
@@ -71,28 +74,28 @@ class _HomePageState extends State<HomePage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
-              appBar: AppBar(
-                title: const Text('PatGest'),
-              ),
+              // appBar: AppBar(
+              //   title: const Text('PatGest'),
+              // ),
               body: Row(
-                children: <Widget>[
-                  NavigationRail(
-                    groupAlignment: -1,
-                    onDestinationSelected: (int index) {
-                      setState(() {
-                        _selectedIndex = index;
-                        _selectedPage = _destinations[index].pageToLoad;
-                      });
-                    },
-                    labelType: NavigationRailLabelType.all,
-                    destinations: _destinations,
-                    selectedIndex: _selectedIndex,
-                  ),
-                  Expanded(
-                    child: _selectedPage,
-                  )
-                ],
-              ));
+            children: <Widget>[
+              NavigationRail(
+                groupAlignment: -1,
+                onDestinationSelected: (int index) {
+                  setState(() {
+                    _selectedIndex = index;
+                    _selectedPage = _destinations[index].pageToLoad;
+                  });
+                },
+                labelType: NavigationRailLabelType.all,
+                destinations: _destinations,
+                selectedIndex: _selectedIndex,
+              ),
+              Expanded(
+                child: _selectedPage,
+              )
+            ],
+          ));
         } else {
           return const SplashView();
         }

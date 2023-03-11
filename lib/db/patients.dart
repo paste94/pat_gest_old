@@ -6,16 +6,17 @@ import 'package:drift/drift.dart';
 
 class Patients extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get name => text().nullable()();
-  TextColumn get surname => text().nullable()();
+  TextColumn get name => text()();
+  TextColumn get surname => text()();
   TextColumn get email => text().nullable()();
   TextColumn get phoneNumber => text().nullable()();
-  TextColumn get note => text().nullable()();
-  RealColumn get height =>
-      real().check(height.isBiggerOrEqualValue(0)).nullable()();
+  TextColumn get notes => text().nullable()();
+  RealColumn get height => real().check(height.isBiggerOrEqualValue(0))();
   DateTimeColumn get dateOfBirth => dateTime()
       .check(dateOfBirth.isBiggerThan(Constant(DateTime(1900))))
       .nullable()();
+  RealColumn get initialWeight =>
+      real().check(initialWeight.isBiggerThanValue(0))();
 
   @override
   Set<Column> get primaryKey => {id};

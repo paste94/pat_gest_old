@@ -20,14 +20,14 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _surnameMeta =
       const VerificationMeta('surname');
   @override
   late final GeneratedColumn<String> surname = GeneratedColumn<String>(
-      'surname', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+      'surname', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _emailMeta = const VerificationMeta('email');
   @override
   late final GeneratedColumn<String> email = GeneratedColumn<String>(
@@ -39,18 +39,18 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
   late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>(
       'phone_number', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
-  late final GeneratedColumn<String> note = GeneratedColumn<String>(
-      'note', aliasedName, true,
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _heightMeta = const VerificationMeta('height');
   @override
   late final GeneratedColumn<double> height = GeneratedColumn<double>(
-      'height', aliasedName, true,
+      'height', aliasedName, false,
       check: () => height.isBiggerOrEqualValue(0),
       type: DriftSqlType.double,
-      requiredDuringInsert: false);
+      requiredDuringInsert: true);
   static const VerificationMeta _dateOfBirthMeta =
       const VerificationMeta('dateOfBirth');
   @override
@@ -59,9 +59,26 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
       check: () => dateOfBirth.isBiggerThan(Constant(DateTime(1900))),
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false);
+  static const VerificationMeta _initialWeightMeta =
+      const VerificationMeta('initialWeight');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, surname, email, phoneNumber, note, height, dateOfBirth];
+  late final GeneratedColumn<double> initialWeight = GeneratedColumn<double>(
+      'initial_weight', aliasedName, false,
+      check: () => initialWeight.isBiggerThanValue(0),
+      type: DriftSqlType.double,
+      requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        surname,
+        email,
+        phoneNumber,
+        notes,
+        height,
+        dateOfBirth,
+        initialWeight
+      ];
   @override
   String get aliasedName => _alias ?? 'patients';
   @override
@@ -77,10 +94,14 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
     if (data.containsKey('name')) {
       context.handle(
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
     }
     if (data.containsKey('surname')) {
       context.handle(_surnameMeta,
           surname.isAcceptableOrUnknown(data['surname']!, _surnameMeta));
+    } else if (isInserting) {
+      context.missing(_surnameMeta);
     }
     if (data.containsKey('email')) {
       context.handle(
@@ -92,19 +113,29 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
           phoneNumber.isAcceptableOrUnknown(
               data['phone_number']!, _phoneNumberMeta));
     }
-    if (data.containsKey('note')) {
+    if (data.containsKey('notes')) {
       context.handle(
-          _noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
     }
     if (data.containsKey('height')) {
       context.handle(_heightMeta,
           height.isAcceptableOrUnknown(data['height']!, _heightMeta));
+    } else if (isInserting) {
+      context.missing(_heightMeta);
     }
     if (data.containsKey('date_of_birth')) {
       context.handle(
           _dateOfBirthMeta,
           dateOfBirth.isAcceptableOrUnknown(
               data['date_of_birth']!, _dateOfBirthMeta));
+    }
+    if (data.containsKey('initial_weight')) {
+      context.handle(
+          _initialWeightMeta,
+          initialWeight.isAcceptableOrUnknown(
+              data['initial_weight']!, _initialWeightMeta));
+    } else if (isInserting) {
+      context.missing(_initialWeightMeta);
     }
     return context;
   }
@@ -118,19 +149,21 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name']),
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       surname: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}surname']),
+          .read(DriftSqlType.string, data['${effectivePrefix}surname'])!,
       email: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}email']),
       phoneNumber: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}phone_number']),
-      note: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}note']),
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
       height: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}height']),
+          .read(DriftSqlType.double, data['${effectivePrefix}height'])!,
       dateOfBirth: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_of_birth']),
+      initialWeight: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}initial_weight'])!,
     );
   }
 
@@ -142,68 +175,64 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
 
 class Patient extends DataClass implements Insertable<Patient> {
   final int id;
-  final String? name;
-  final String? surname;
+  final String name;
+  final String surname;
   final String? email;
   final String? phoneNumber;
-  final String? note;
-  final double? height;
+  final String? notes;
+  final double height;
   final DateTime? dateOfBirth;
+  final double initialWeight;
   const Patient(
       {required this.id,
-      this.name,
-      this.surname,
+      required this.name,
+      required this.surname,
       this.email,
       this.phoneNumber,
-      this.note,
-      this.height,
-      this.dateOfBirth});
+      this.notes,
+      required this.height,
+      this.dateOfBirth,
+      required this.initialWeight});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    if (!nullToAbsent || name != null) {
-      map['name'] = Variable<String>(name);
-    }
-    if (!nullToAbsent || surname != null) {
-      map['surname'] = Variable<String>(surname);
-    }
+    map['name'] = Variable<String>(name);
+    map['surname'] = Variable<String>(surname);
     if (!nullToAbsent || email != null) {
       map['email'] = Variable<String>(email);
     }
     if (!nullToAbsent || phoneNumber != null) {
       map['phone_number'] = Variable<String>(phoneNumber);
     }
-    if (!nullToAbsent || note != null) {
-      map['note'] = Variable<String>(note);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
     }
-    if (!nullToAbsent || height != null) {
-      map['height'] = Variable<double>(height);
-    }
+    map['height'] = Variable<double>(height);
     if (!nullToAbsent || dateOfBirth != null) {
       map['date_of_birth'] = Variable<DateTime>(dateOfBirth);
     }
+    map['initial_weight'] = Variable<double>(initialWeight);
     return map;
   }
 
   PatientsCompanion toCompanion(bool nullToAbsent) {
     return PatientsCompanion(
       id: Value(id),
-      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
-      surname: surname == null && nullToAbsent
-          ? const Value.absent()
-          : Value(surname),
+      name: Value(name),
+      surname: Value(surname),
       email:
           email == null && nullToAbsent ? const Value.absent() : Value(email),
       phoneNumber: phoneNumber == null && nullToAbsent
           ? const Value.absent()
           : Value(phoneNumber),
-      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
-      height:
-          height == null && nullToAbsent ? const Value.absent() : Value(height),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      height: Value(height),
       dateOfBirth: dateOfBirth == null && nullToAbsent
           ? const Value.absent()
           : Value(dateOfBirth),
+      initialWeight: Value(initialWeight),
     );
   }
 
@@ -212,13 +241,14 @@ class Patient extends DataClass implements Insertable<Patient> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Patient(
       id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String?>(json['name']),
-      surname: serializer.fromJson<String?>(json['surname']),
+      name: serializer.fromJson<String>(json['name']),
+      surname: serializer.fromJson<String>(json['surname']),
       email: serializer.fromJson<String?>(json['email']),
       phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
-      note: serializer.fromJson<String?>(json['note']),
-      height: serializer.fromJson<double?>(json['height']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      height: serializer.fromJson<double>(json['height']),
       dateOfBirth: serializer.fromJson<DateTime?>(json['dateOfBirth']),
+      initialWeight: serializer.fromJson<double>(json['initialWeight']),
     );
   }
   @override
@@ -226,34 +256,37 @@ class Patient extends DataClass implements Insertable<Patient> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String?>(name),
-      'surname': serializer.toJson<String?>(surname),
+      'name': serializer.toJson<String>(name),
+      'surname': serializer.toJson<String>(surname),
       'email': serializer.toJson<String?>(email),
       'phoneNumber': serializer.toJson<String?>(phoneNumber),
-      'note': serializer.toJson<String?>(note),
-      'height': serializer.toJson<double?>(height),
+      'notes': serializer.toJson<String?>(notes),
+      'height': serializer.toJson<double>(height),
       'dateOfBirth': serializer.toJson<DateTime?>(dateOfBirth),
+      'initialWeight': serializer.toJson<double>(initialWeight),
     };
   }
 
   Patient copyWith(
           {int? id,
-          Value<String?> name = const Value.absent(),
-          Value<String?> surname = const Value.absent(),
+          String? name,
+          String? surname,
           Value<String?> email = const Value.absent(),
           Value<String?> phoneNumber = const Value.absent(),
-          Value<String?> note = const Value.absent(),
-          Value<double?> height = const Value.absent(),
-          Value<DateTime?> dateOfBirth = const Value.absent()}) =>
+          Value<String?> notes = const Value.absent(),
+          double? height,
+          Value<DateTime?> dateOfBirth = const Value.absent(),
+          double? initialWeight}) =>
       Patient(
         id: id ?? this.id,
-        name: name.present ? name.value : this.name,
-        surname: surname.present ? surname.value : this.surname,
+        name: name ?? this.name,
+        surname: surname ?? this.surname,
         email: email.present ? email.value : this.email,
         phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
-        note: note.present ? note.value : this.note,
-        height: height.present ? height.value : this.height,
+        notes: notes.present ? notes.value : this.notes,
+        height: height ?? this.height,
         dateOfBirth: dateOfBirth.present ? dateOfBirth.value : this.dateOfBirth,
+        initialWeight: initialWeight ?? this.initialWeight,
       );
   @override
   String toString() {
@@ -263,16 +296,17 @@ class Patient extends DataClass implements Insertable<Patient> {
           ..write('surname: $surname, ')
           ..write('email: $email, ')
           ..write('phoneNumber: $phoneNumber, ')
-          ..write('note: $note, ')
+          ..write('notes: $notes, ')
           ..write('height: $height, ')
-          ..write('dateOfBirth: $dateOfBirth')
+          ..write('dateOfBirth: $dateOfBirth, ')
+          ..write('initialWeight: $initialWeight')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, name, surname, email, phoneNumber, note, height, dateOfBirth);
+  int get hashCode => Object.hash(id, name, surname, email, phoneNumber, notes,
+      height, dateOfBirth, initialWeight);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -282,49 +316,57 @@ class Patient extends DataClass implements Insertable<Patient> {
           other.surname == this.surname &&
           other.email == this.email &&
           other.phoneNumber == this.phoneNumber &&
-          other.note == this.note &&
+          other.notes == this.notes &&
           other.height == this.height &&
-          other.dateOfBirth == this.dateOfBirth);
+          other.dateOfBirth == this.dateOfBirth &&
+          other.initialWeight == this.initialWeight);
 }
 
 class PatientsCompanion extends UpdateCompanion<Patient> {
   final Value<int> id;
-  final Value<String?> name;
-  final Value<String?> surname;
+  final Value<String> name;
+  final Value<String> surname;
   final Value<String?> email;
   final Value<String?> phoneNumber;
-  final Value<String?> note;
-  final Value<double?> height;
+  final Value<String?> notes;
+  final Value<double> height;
   final Value<DateTime?> dateOfBirth;
+  final Value<double> initialWeight;
   const PatientsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.surname = const Value.absent(),
     this.email = const Value.absent(),
     this.phoneNumber = const Value.absent(),
-    this.note = const Value.absent(),
+    this.notes = const Value.absent(),
     this.height = const Value.absent(),
     this.dateOfBirth = const Value.absent(),
+    this.initialWeight = const Value.absent(),
   });
   PatientsCompanion.insert({
     this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.surname = const Value.absent(),
+    required String name,
+    required String surname,
     this.email = const Value.absent(),
     this.phoneNumber = const Value.absent(),
-    this.note = const Value.absent(),
-    this.height = const Value.absent(),
+    this.notes = const Value.absent(),
+    required double height,
     this.dateOfBirth = const Value.absent(),
-  });
+    required double initialWeight,
+  })  : name = Value(name),
+        surname = Value(surname),
+        height = Value(height),
+        initialWeight = Value(initialWeight);
   static Insertable<Patient> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? surname,
     Expression<String>? email,
     Expression<String>? phoneNumber,
-    Expression<String>? note,
+    Expression<String>? notes,
     Expression<double>? height,
     Expression<DateTime>? dateOfBirth,
+    Expression<double>? initialWeight,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -332,30 +374,33 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       if (surname != null) 'surname': surname,
       if (email != null) 'email': email,
       if (phoneNumber != null) 'phone_number': phoneNumber,
-      if (note != null) 'note': note,
+      if (notes != null) 'notes': notes,
       if (height != null) 'height': height,
       if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
+      if (initialWeight != null) 'initial_weight': initialWeight,
     });
   }
 
   PatientsCompanion copyWith(
       {Value<int>? id,
-      Value<String?>? name,
-      Value<String?>? surname,
+      Value<String>? name,
+      Value<String>? surname,
       Value<String?>? email,
       Value<String?>? phoneNumber,
-      Value<String?>? note,
-      Value<double?>? height,
-      Value<DateTime?>? dateOfBirth}) {
+      Value<String?>? notes,
+      Value<double>? height,
+      Value<DateTime?>? dateOfBirth,
+      Value<double>? initialWeight}) {
     return PatientsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       surname: surname ?? this.surname,
       email: email ?? this.email,
       phoneNumber: phoneNumber ?? this.phoneNumber,
-      note: note ?? this.note,
+      notes: notes ?? this.notes,
       height: height ?? this.height,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      initialWeight: initialWeight ?? this.initialWeight,
     );
   }
 
@@ -377,14 +422,17 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     if (phoneNumber.present) {
       map['phone_number'] = Variable<String>(phoneNumber.value);
     }
-    if (note.present) {
-      map['note'] = Variable<String>(note.value);
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
     }
     if (height.present) {
       map['height'] = Variable<double>(height.value);
     }
     if (dateOfBirth.present) {
       map['date_of_birth'] = Variable<DateTime>(dateOfBirth.value);
+    }
+    if (initialWeight.present) {
+      map['initial_weight'] = Variable<double>(initialWeight.value);
     }
     return map;
   }
@@ -397,9 +445,10 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
           ..write('surname: $surname, ')
           ..write('email: $email, ')
           ..write('phoneNumber: $phoneNumber, ')
-          ..write('note: $note, ')
+          ..write('notes: $notes, ')
           ..write('height: $height, ')
-          ..write('dateOfBirth: $dateOfBirth')
+          ..write('dateOfBirth: $dateOfBirth, ')
+          ..write('initialWeight: $initialWeight')
           ..write(')'))
         .toString();
   }
@@ -2268,8 +2317,8 @@ class $VisitsTable extends Visits with TableInfo<$VisitsTable, Visit> {
       const VerificationMeta('eventName');
   @override
   late final GeneratedColumn<String> eventName = GeneratedColumn<String>(
-      'event_name', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
+      'event_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _isAllDayMeta =
       const VerificationMeta('isAllDay');
   @override
@@ -2338,6 +2387,8 @@ class $VisitsTable extends Visits with TableInfo<$VisitsTable, Visit> {
     if (data.containsKey('event_name')) {
       context.handle(_eventNameMeta,
           eventName.isAcceptableOrUnknown(data['event_name']!, _eventNameMeta));
+    } else if (isInserting) {
+      context.missing(_eventNameMeta);
     }
     if (data.containsKey('is_all_day')) {
       context.handle(_isAllDayMeta,
@@ -2377,7 +2428,7 @@ class $VisitsTable extends Visits with TableInfo<$VisitsTable, Visit> {
       patientId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}patient_id'])!,
       eventName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}event_name']),
+          .read(DriftSqlType.string, data['${effectivePrefix}event_name'])!,
       isAllDay: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_all_day'])!,
       from: attachedDatabase.typeMapping
@@ -2406,7 +2457,7 @@ class $VisitsTable extends Visits with TableInfo<$VisitsTable, Visit> {
 class Visit extends DataClass implements Insertable<Visit> {
   final int id;
   final int patientId;
-  final String? eventName;
+  final String eventName;
   final bool isAllDay;
   final DateTime from;
   final DateTime to;
@@ -2416,7 +2467,7 @@ class Visit extends DataClass implements Insertable<Visit> {
   const Visit(
       {required this.id,
       required this.patientId,
-      this.eventName,
+      required this.eventName,
       required this.isAllDay,
       required this.from,
       required this.to,
@@ -2428,9 +2479,7 @@ class Visit extends DataClass implements Insertable<Visit> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['patient_id'] = Variable<int>(patientId);
-    if (!nullToAbsent || eventName != null) {
-      map['event_name'] = Variable<String>(eventName);
-    }
+    map['event_name'] = Variable<String>(eventName);
     map['is_all_day'] = Variable<bool>(isAllDay);
     map['from'] = Variable<DateTime>(from);
     map['to'] = Variable<DateTime>(to);
@@ -2451,9 +2500,7 @@ class Visit extends DataClass implements Insertable<Visit> {
     return VisitsCompanion(
       id: Value(id),
       patientId: Value(patientId),
-      eventName: eventName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(eventName),
+      eventName: Value(eventName),
       isAllDay: Value(isAllDay),
       from: Value(from),
       to: Value(to),
@@ -2471,7 +2518,7 @@ class Visit extends DataClass implements Insertable<Visit> {
     return Visit(
       id: serializer.fromJson<int>(json['id']),
       patientId: serializer.fromJson<int>(json['patientId']),
-      eventName: serializer.fromJson<String?>(json['eventName']),
+      eventName: serializer.fromJson<String>(json['eventName']),
       isAllDay: serializer.fromJson<bool>(json['isAllDay']),
       from: serializer.fromJson<DateTime>(json['from']),
       to: serializer.fromJson<DateTime>(json['to']),
@@ -2486,7 +2533,7 @@ class Visit extends DataClass implements Insertable<Visit> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'patientId': serializer.toJson<int>(patientId),
-      'eventName': serializer.toJson<String?>(eventName),
+      'eventName': serializer.toJson<String>(eventName),
       'isAllDay': serializer.toJson<bool>(isAllDay),
       'from': serializer.toJson<DateTime>(from),
       'to': serializer.toJson<DateTime>(to),
@@ -2499,7 +2546,7 @@ class Visit extends DataClass implements Insertable<Visit> {
   Visit copyWith(
           {int? id,
           int? patientId,
-          Value<String?> eventName = const Value.absent(),
+          String? eventName,
           bool? isAllDay,
           DateTime? from,
           DateTime? to,
@@ -2509,7 +2556,7 @@ class Visit extends DataClass implements Insertable<Visit> {
       Visit(
         id: id ?? this.id,
         patientId: patientId ?? this.patientId,
-        eventName: eventName.present ? eventName.value : this.eventName,
+        eventName: eventName ?? this.eventName,
         isAllDay: isAllDay ?? this.isAllDay,
         from: from ?? this.from,
         to: to ?? this.to,
@@ -2554,7 +2601,7 @@ class Visit extends DataClass implements Insertable<Visit> {
 class VisitsCompanion extends UpdateCompanion<Visit> {
   final Value<int> id;
   final Value<int> patientId;
-  final Value<String?> eventName;
+  final Value<String> eventName;
   final Value<bool> isAllDay;
   final Value<DateTime> from;
   final Value<DateTime> to;
@@ -2575,7 +2622,7 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
   VisitsCompanion.insert({
     this.id = const Value.absent(),
     required int patientId,
-    this.eventName = const Value.absent(),
+    required String eventName,
     this.isAllDay = const Value.absent(),
     required DateTime from,
     required DateTime to,
@@ -2583,6 +2630,7 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
     this.notes = const Value.absent(),
     this.background = const Value.absent(),
   })  : patientId = Value(patientId),
+        eventName = Value(eventName),
         from = Value(from),
         to = Value(to);
   static Insertable<Visit> custom({
@@ -2612,7 +2660,7 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
   VisitsCompanion copyWith(
       {Value<int>? id,
       Value<int>? patientId,
-      Value<String?>? eventName,
+      Value<String>? eventName,
       Value<bool>? isAllDay,
       Value<DateTime>? from,
       Value<DateTime>? to,

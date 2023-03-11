@@ -42,19 +42,25 @@ class CrudService {
   }
 
   Future<int> createPatient({
-    String? name,
-    String? surname,
+    required String surname,
+    required String name,
+    required double height,
+    required double initialWeight,
+    required DateTime dateOfBirth,
     String? email,
     String? phoneNumber,
-    String? note,
+    String? notes,
   }) async {
     final db = _getDatabaseOrThrow();
     return await db.into(db.patients).insert(PatientsCompanion(
-          name: Value.ofNullable(name),
-          surname: Value.ofNullable(surname),
+          name: Value(name),
+          surname: Value(surname),
           email: Value.ofNullable(email),
           phoneNumber: Value.ofNullable(phoneNumber),
-          note: Value.ofNullable(note),
+          notes: Value.ofNullable(notes),
+          height: Value(height),
+          initialWeight: Value(initialWeight),
+          dateOfBirth: Value(dateOfBirth),
         ));
   }
 }

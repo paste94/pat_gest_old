@@ -9,7 +9,7 @@ import 'package:pat_gest/db/patients.dart';
 class Visits extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get patientId => integer().references(Patients, #id)();
-  TextColumn get eventName => text().nullable()();
+  TextColumn get eventName => text()();
   BoolColumn get isAllDay => boolean().withDefault(const Constant(false))();
   DateTimeColumn get from => dateTime()();
   DateTimeColumn get to => dateTime()();
