@@ -36,16 +36,15 @@ class _PatientViewState extends State<PatientView> {
         }
         final patient = snapshot.data!;
 
-        _nameController.text = patient.name ?? '';
-        _surnameController.text = patient.surname ?? '';
+        _nameController.text = patient.name;
+        _surnameController.text = patient.surname;
         _emailController.text = patient.email ?? '';
         _phoneNumberController.text = patient.phoneNumber ?? '';
         _notesController.text = patient.notes ?? '';
 
         return Scaffold(
           appBar: AppBar(
-            title:
-                Text('${patient.name ?? 'NONE'} ${patient.surname ?? 'NONE'}'),
+            title: Text('${patient.name} ${patient.surname}'),
           ),
           body: SingleChildScrollView(
             child: Wrap(
