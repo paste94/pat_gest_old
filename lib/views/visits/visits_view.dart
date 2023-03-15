@@ -83,6 +83,9 @@ class _VisitsViewState extends State<VisitsView> {
         const Duration(hours: 2),
       ),
       background: Colors.blue,
+      isCanceled: false,
+      isDone: false,
+      isInitial: false,
     ));
 
     return VisitsDataSource(appointments);

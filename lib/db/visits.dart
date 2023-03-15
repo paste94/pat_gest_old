@@ -19,6 +19,9 @@ class Visits extends Table {
   TextColumn get background => text()
       .map(const ColorConverter())
       .withDefault(Constant(Colors.blue.value.toString()))();
+  BoolColumn get isDone => boolean().withDefault(const Constant(false))();
+  BoolColumn get isCanceled => boolean().withDefault(const Constant(false))();
+  BoolColumn get isInitial => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

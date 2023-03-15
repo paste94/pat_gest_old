@@ -15,8 +15,6 @@ class Patients extends Table {
   DateTimeColumn get dateOfBirth => dateTime()
       .check(dateOfBirth.isBiggerThan(Constant(DateTime(1900))))
       .nullable()();
-  RealColumn get initialWeight =>
-      real().check(initialWeight.isBiggerThanValue(0))();
 
   @override
   Set<Column> get primaryKey => {id};

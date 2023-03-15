@@ -104,32 +104,6 @@ class _AddPatientViewState extends State<AddPatientView> {
                   ),
                 ],
               ),
-              TextField(
-                controller: _dateController,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: 'Birth date*',
-                  errorText:
-                      _submitted ? dateValidator(_dateController.text) : null,
-                  suffixIcon: IconButton(
-                    onPressed: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                      );
-
-                      if (pickedDate != null) {
-                        _dateController.text =
-                            DateFormat(dateFormatConst).format(pickedDate);
-                      }
-                    },
-                    icon: const Icon(Icons.calendar_month),
-                  ),
-                ),
-              ),
-              const TextDivider(text: 'Clinical data'),
               Row(
                 children: [
                   Expanded(
@@ -148,14 +122,29 @@ class _AddPatientViewState extends State<AddPatientView> {
                   SizedBox(width: _spacing),
                   Expanded(
                     child: TextField(
-                      controller: _initialWeightController,
+                      controller: _dateController,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: 'Initial Weight*',
-                        suffix: const Text('Kg'),
+                        labelText: 'Birth date*',
                         errorText: _submitted
-                            ? weightValidator(_initialWeightController.text)
+                            ? dateValidator(_dateController.text)
                             : null,
+                        suffixIcon: IconButton(
+                          onPressed: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime.now(),
+                            );
+
+                            if (pickedDate != null) {
+                              _dateController.text = DateFormat(dateFormatConst)
+                                  .format(pickedDate);
+                            }
+                          },
+                          icon: const Icon(Icons.calendar_month),
+                        ),
                       ),
                     ),
                   ),
@@ -186,8 +175,7 @@ class _AddPatientViewState extends State<AddPatientView> {
               surnameValidator(_surnameController.text) != null ||
               emailValidator(_emailController.text) != null ||
               dateValidator(_dateController.text) != null ||
-              heightValidator(_heightController.text) != null ||
-              weightValidator(_initialWeightController.text) != null) {
+              heightValidator(_heightController.text) != null) {
             loadPatient = false;
           }
 
@@ -219,12 +207,12 @@ class _AddPatientViewState extends State<AddPatientView> {
             await CrudService().createPatient(
               name: _nameController.text,
               surname: _surnameController.text,
+              dateOfBirth:
+                  DateFormat(dateFormatConst).parse(_dateController.text),
+              height: double.parse(_heightController.text),
               email: _emailController.text,
               phoneNumber: _phoneNumberController.text,
               notes: _notesController.text,
-              dateOfBirth: DateTime.parse(_dateController.text),
-              height: double.parse(_heightController.text),
-              initialWeight: double.parse(_initialWeightController.text),
             );
 
             // close the dialog automatically

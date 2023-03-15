@@ -59,26 +59,9 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
       check: () => dateOfBirth.isBiggerThan(Constant(DateTime(1900))),
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false);
-  static const VerificationMeta _initialWeightMeta =
-      const VerificationMeta('initialWeight');
   @override
-  late final GeneratedColumn<double> initialWeight = GeneratedColumn<double>(
-      'initial_weight', aliasedName, false,
-      check: () => initialWeight.isBiggerThanValue(0),
-      type: DriftSqlType.double,
-      requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        name,
-        surname,
-        email,
-        phoneNumber,
-        notes,
-        height,
-        dateOfBirth,
-        initialWeight
-      ];
+  List<GeneratedColumn> get $columns =>
+      [id, name, surname, email, phoneNumber, notes, height, dateOfBirth];
   @override
   String get aliasedName => _alias ?? 'patients';
   @override
@@ -129,14 +112,6 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
           dateOfBirth.isAcceptableOrUnknown(
               data['date_of_birth']!, _dateOfBirthMeta));
     }
-    if (data.containsKey('initial_weight')) {
-      context.handle(
-          _initialWeightMeta,
-          initialWeight.isAcceptableOrUnknown(
-              data['initial_weight']!, _initialWeightMeta));
-    } else if (isInserting) {
-      context.missing(_initialWeightMeta);
-    }
     return context;
   }
 
@@ -162,8 +137,6 @@ class $PatientsTable extends Patients with TableInfo<$PatientsTable, Patient> {
           .read(DriftSqlType.double, data['${effectivePrefix}height'])!,
       dateOfBirth: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_of_birth']),
-      initialWeight: attachedDatabase.typeMapping
-          .read(DriftSqlType.double, data['${effectivePrefix}initial_weight'])!,
     );
   }
 
@@ -182,7 +155,6 @@ class Patient extends DataClass implements Insertable<Patient> {
   final String? notes;
   final double height;
   final DateTime? dateOfBirth;
-  final double initialWeight;
   const Patient(
       {required this.id,
       required this.name,
@@ -191,8 +163,7 @@ class Patient extends DataClass implements Insertable<Patient> {
       this.phoneNumber,
       this.notes,
       required this.height,
-      this.dateOfBirth,
-      required this.initialWeight});
+      this.dateOfBirth});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -212,7 +183,6 @@ class Patient extends DataClass implements Insertable<Patient> {
     if (!nullToAbsent || dateOfBirth != null) {
       map['date_of_birth'] = Variable<DateTime>(dateOfBirth);
     }
-    map['initial_weight'] = Variable<double>(initialWeight);
     return map;
   }
 
@@ -232,7 +202,6 @@ class Patient extends DataClass implements Insertable<Patient> {
       dateOfBirth: dateOfBirth == null && nullToAbsent
           ? const Value.absent()
           : Value(dateOfBirth),
-      initialWeight: Value(initialWeight),
     );
   }
 
@@ -248,7 +217,6 @@ class Patient extends DataClass implements Insertable<Patient> {
       notes: serializer.fromJson<String?>(json['notes']),
       height: serializer.fromJson<double>(json['height']),
       dateOfBirth: serializer.fromJson<DateTime?>(json['dateOfBirth']),
-      initialWeight: serializer.fromJson<double>(json['initialWeight']),
     );
   }
   @override
@@ -263,7 +231,6 @@ class Patient extends DataClass implements Insertable<Patient> {
       'notes': serializer.toJson<String?>(notes),
       'height': serializer.toJson<double>(height),
       'dateOfBirth': serializer.toJson<DateTime?>(dateOfBirth),
-      'initialWeight': serializer.toJson<double>(initialWeight),
     };
   }
 
@@ -275,8 +242,7 @@ class Patient extends DataClass implements Insertable<Patient> {
           Value<String?> phoneNumber = const Value.absent(),
           Value<String?> notes = const Value.absent(),
           double? height,
-          Value<DateTime?> dateOfBirth = const Value.absent(),
-          double? initialWeight}) =>
+          Value<DateTime?> dateOfBirth = const Value.absent()}) =>
       Patient(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -286,7 +252,6 @@ class Patient extends DataClass implements Insertable<Patient> {
         notes: notes.present ? notes.value : this.notes,
         height: height ?? this.height,
         dateOfBirth: dateOfBirth.present ? dateOfBirth.value : this.dateOfBirth,
-        initialWeight: initialWeight ?? this.initialWeight,
       );
   @override
   String toString() {
@@ -298,15 +263,14 @@ class Patient extends DataClass implements Insertable<Patient> {
           ..write('phoneNumber: $phoneNumber, ')
           ..write('notes: $notes, ')
           ..write('height: $height, ')
-          ..write('dateOfBirth: $dateOfBirth, ')
-          ..write('initialWeight: $initialWeight')
+          ..write('dateOfBirth: $dateOfBirth')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, surname, email, phoneNumber, notes,
-      height, dateOfBirth, initialWeight);
+  int get hashCode => Object.hash(
+      id, name, surname, email, phoneNumber, notes, height, dateOfBirth);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -318,8 +282,7 @@ class Patient extends DataClass implements Insertable<Patient> {
           other.phoneNumber == this.phoneNumber &&
           other.notes == this.notes &&
           other.height == this.height &&
-          other.dateOfBirth == this.dateOfBirth &&
-          other.initialWeight == this.initialWeight);
+          other.dateOfBirth == this.dateOfBirth);
 }
 
 class PatientsCompanion extends UpdateCompanion<Patient> {
@@ -331,7 +294,6 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
   final Value<String?> notes;
   final Value<double> height;
   final Value<DateTime?> dateOfBirth;
-  final Value<double> initialWeight;
   const PatientsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -341,7 +303,6 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     this.notes = const Value.absent(),
     this.height = const Value.absent(),
     this.dateOfBirth = const Value.absent(),
-    this.initialWeight = const Value.absent(),
   });
   PatientsCompanion.insert({
     this.id = const Value.absent(),
@@ -352,11 +313,9 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     this.notes = const Value.absent(),
     required double height,
     this.dateOfBirth = const Value.absent(),
-    required double initialWeight,
   })  : name = Value(name),
         surname = Value(surname),
-        height = Value(height),
-        initialWeight = Value(initialWeight);
+        height = Value(height);
   static Insertable<Patient> custom({
     Expression<int>? id,
     Expression<String>? name,
@@ -366,7 +325,6 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     Expression<String>? notes,
     Expression<double>? height,
     Expression<DateTime>? dateOfBirth,
-    Expression<double>? initialWeight,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -377,7 +335,6 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       if (notes != null) 'notes': notes,
       if (height != null) 'height': height,
       if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
-      if (initialWeight != null) 'initial_weight': initialWeight,
     });
   }
 
@@ -389,8 +346,7 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       Value<String?>? phoneNumber,
       Value<String?>? notes,
       Value<double>? height,
-      Value<DateTime?>? dateOfBirth,
-      Value<double>? initialWeight}) {
+      Value<DateTime?>? dateOfBirth}) {
     return PatientsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -400,7 +356,6 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
       notes: notes ?? this.notes,
       height: height ?? this.height,
       dateOfBirth: dateOfBirth ?? this.dateOfBirth,
-      initialWeight: initialWeight ?? this.initialWeight,
     );
   }
 
@@ -431,9 +386,6 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
     if (dateOfBirth.present) {
       map['date_of_birth'] = Variable<DateTime>(dateOfBirth.value);
     }
-    if (initialWeight.present) {
-      map['initial_weight'] = Variable<double>(initialWeight.value);
-    }
     return map;
   }
 
@@ -447,8 +399,7 @@ class PatientsCompanion extends UpdateCompanion<Patient> {
           ..write('phoneNumber: $phoneNumber, ')
           ..write('notes: $notes, ')
           ..write('height: $height, ')
-          ..write('dateOfBirth: $dateOfBirth, ')
-          ..write('initialWeight: $initialWeight')
+          ..write('dateOfBirth: $dateOfBirth')
           ..write(')'))
         .toString();
   }
@@ -2363,9 +2314,59 @@ class $VisitsTable extends Visits with TableInfo<$VisitsTable, Visit> {
               requiredDuringInsert: false,
               defaultValue: Constant(Colors.blue.value.toString()))
           .withConverter<Color>($VisitsTable.$converterbackground);
+  static const VerificationMeta _isDoneMeta = const VerificationMeta('isDone');
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, patientId, eventName, isAllDay, from, to, weight, notes, background];
+  late final GeneratedColumn<bool> isDone =
+      GeneratedColumn<bool>('is_done', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_done" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  static const VerificationMeta _isCanceledMeta =
+      const VerificationMeta('isCanceled');
+  @override
+  late final GeneratedColumn<bool> isCanceled =
+      GeneratedColumn<bool>('is_canceled', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_canceled" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  static const VerificationMeta _isInitialMeta =
+      const VerificationMeta('isInitial');
+  @override
+  late final GeneratedColumn<bool> isInitial =
+      GeneratedColumn<bool>('is_initial', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_initial" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        patientId,
+        eventName,
+        isAllDay,
+        from,
+        to,
+        weight,
+        notes,
+        background,
+        isDone,
+        isCanceled,
+        isInitial
+      ];
   @override
   String get aliasedName => _alias ?? 'visits';
   @override
@@ -2414,6 +2415,20 @@ class $VisitsTable extends Visits with TableInfo<$VisitsTable, Visit> {
           _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
     }
     context.handle(_backgroundMeta, const VerificationResult.success());
+    if (data.containsKey('is_done')) {
+      context.handle(_isDoneMeta,
+          isDone.isAcceptableOrUnknown(data['is_done']!, _isDoneMeta));
+    }
+    if (data.containsKey('is_canceled')) {
+      context.handle(
+          _isCanceledMeta,
+          isCanceled.isAcceptableOrUnknown(
+              data['is_canceled']!, _isCanceledMeta));
+    }
+    if (data.containsKey('is_initial')) {
+      context.handle(_isInitialMeta,
+          isInitial.isAcceptableOrUnknown(data['is_initial']!, _isInitialMeta));
+    }
     return context;
   }
 
@@ -2442,6 +2457,12 @@ class $VisitsTable extends Visits with TableInfo<$VisitsTable, Visit> {
       background: $VisitsTable.$converterbackground.fromSql(attachedDatabase
           .typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}background'])!),
+      isDone: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_done'])!,
+      isCanceled: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_canceled'])!,
+      isInitial: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_initial'])!,
     );
   }
 
@@ -2464,6 +2485,9 @@ class Visit extends DataClass implements Insertable<Visit> {
   final double? weight;
   final String? notes;
   final Color background;
+  final bool isDone;
+  final bool isCanceled;
+  final bool isInitial;
   const Visit(
       {required this.id,
       required this.patientId,
@@ -2473,7 +2497,10 @@ class Visit extends DataClass implements Insertable<Visit> {
       required this.to,
       this.weight,
       this.notes,
-      required this.background});
+      required this.background,
+      required this.isDone,
+      required this.isCanceled,
+      required this.isInitial});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2493,6 +2520,9 @@ class Visit extends DataClass implements Insertable<Visit> {
       final converter = $VisitsTable.$converterbackground;
       map['background'] = Variable<String>(converter.toSql(background));
     }
+    map['is_done'] = Variable<bool>(isDone);
+    map['is_canceled'] = Variable<bool>(isCanceled);
+    map['is_initial'] = Variable<bool>(isInitial);
     return map;
   }
 
@@ -2509,6 +2539,9 @@ class Visit extends DataClass implements Insertable<Visit> {
       notes:
           notes == null && nullToAbsent ? const Value.absent() : Value(notes),
       background: Value(background),
+      isDone: Value(isDone),
+      isCanceled: Value(isCanceled),
+      isInitial: Value(isInitial),
     );
   }
 
@@ -2525,6 +2558,9 @@ class Visit extends DataClass implements Insertable<Visit> {
       weight: serializer.fromJson<double?>(json['weight']),
       notes: serializer.fromJson<String?>(json['notes']),
       background: serializer.fromJson<Color>(json['background']),
+      isDone: serializer.fromJson<bool>(json['isDone']),
+      isCanceled: serializer.fromJson<bool>(json['isCanceled']),
+      isInitial: serializer.fromJson<bool>(json['isInitial']),
     );
   }
   @override
@@ -2540,6 +2576,9 @@ class Visit extends DataClass implements Insertable<Visit> {
       'weight': serializer.toJson<double?>(weight),
       'notes': serializer.toJson<String?>(notes),
       'background': serializer.toJson<Color>(background),
+      'isDone': serializer.toJson<bool>(isDone),
+      'isCanceled': serializer.toJson<bool>(isCanceled),
+      'isInitial': serializer.toJson<bool>(isInitial),
     };
   }
 
@@ -2552,7 +2591,10 @@ class Visit extends DataClass implements Insertable<Visit> {
           DateTime? to,
           Value<double?> weight = const Value.absent(),
           Value<String?> notes = const Value.absent(),
-          Color? background}) =>
+          Color? background,
+          bool? isDone,
+          bool? isCanceled,
+          bool? isInitial}) =>
       Visit(
         id: id ?? this.id,
         patientId: patientId ?? this.patientId,
@@ -2563,6 +2605,9 @@ class Visit extends DataClass implements Insertable<Visit> {
         weight: weight.present ? weight.value : this.weight,
         notes: notes.present ? notes.value : this.notes,
         background: background ?? this.background,
+        isDone: isDone ?? this.isDone,
+        isCanceled: isCanceled ?? this.isCanceled,
+        isInitial: isInitial ?? this.isInitial,
       );
   @override
   String toString() {
@@ -2575,14 +2620,17 @@ class Visit extends DataClass implements Insertable<Visit> {
           ..write('to: $to, ')
           ..write('weight: $weight, ')
           ..write('notes: $notes, ')
-          ..write('background: $background')
+          ..write('background: $background, ')
+          ..write('isDone: $isDone, ')
+          ..write('isCanceled: $isCanceled, ')
+          ..write('isInitial: $isInitial')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, patientId, eventName, isAllDay, from, to, weight, notes, background);
+  int get hashCode => Object.hash(id, patientId, eventName, isAllDay, from, to,
+      weight, notes, background, isDone, isCanceled, isInitial);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2595,7 +2643,10 @@ class Visit extends DataClass implements Insertable<Visit> {
           other.to == this.to &&
           other.weight == this.weight &&
           other.notes == this.notes &&
-          other.background == this.background);
+          other.background == this.background &&
+          other.isDone == this.isDone &&
+          other.isCanceled == this.isCanceled &&
+          other.isInitial == this.isInitial);
 }
 
 class VisitsCompanion extends UpdateCompanion<Visit> {
@@ -2608,6 +2659,9 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
   final Value<double?> weight;
   final Value<String?> notes;
   final Value<Color> background;
+  final Value<bool> isDone;
+  final Value<bool> isCanceled;
+  final Value<bool> isInitial;
   const VisitsCompanion({
     this.id = const Value.absent(),
     this.patientId = const Value.absent(),
@@ -2618,6 +2672,9 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
     this.weight = const Value.absent(),
     this.notes = const Value.absent(),
     this.background = const Value.absent(),
+    this.isDone = const Value.absent(),
+    this.isCanceled = const Value.absent(),
+    this.isInitial = const Value.absent(),
   });
   VisitsCompanion.insert({
     this.id = const Value.absent(),
@@ -2629,6 +2686,9 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
     this.weight = const Value.absent(),
     this.notes = const Value.absent(),
     this.background = const Value.absent(),
+    this.isDone = const Value.absent(),
+    this.isCanceled = const Value.absent(),
+    this.isInitial = const Value.absent(),
   })  : patientId = Value(patientId),
         eventName = Value(eventName),
         from = Value(from),
@@ -2643,6 +2703,9 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
     Expression<double>? weight,
     Expression<String>? notes,
     Expression<String>? background,
+    Expression<bool>? isDone,
+    Expression<bool>? isCanceled,
+    Expression<bool>? isInitial,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2654,6 +2717,9 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
       if (weight != null) 'weight': weight,
       if (notes != null) 'notes': notes,
       if (background != null) 'background': background,
+      if (isDone != null) 'is_done': isDone,
+      if (isCanceled != null) 'is_canceled': isCanceled,
+      if (isInitial != null) 'is_initial': isInitial,
     });
   }
 
@@ -2666,7 +2732,10 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
       Value<DateTime>? to,
       Value<double?>? weight,
       Value<String?>? notes,
-      Value<Color>? background}) {
+      Value<Color>? background,
+      Value<bool>? isDone,
+      Value<bool>? isCanceled,
+      Value<bool>? isInitial}) {
     return VisitsCompanion(
       id: id ?? this.id,
       patientId: patientId ?? this.patientId,
@@ -2677,6 +2746,9 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
       weight: weight ?? this.weight,
       notes: notes ?? this.notes,
       background: background ?? this.background,
+      isDone: isDone ?? this.isDone,
+      isCanceled: isCanceled ?? this.isCanceled,
+      isInitial: isInitial ?? this.isInitial,
     );
   }
 
@@ -2711,6 +2783,15 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
       final converter = $VisitsTable.$converterbackground;
       map['background'] = Variable<String>(converter.toSql(background.value));
     }
+    if (isDone.present) {
+      map['is_done'] = Variable<bool>(isDone.value);
+    }
+    if (isCanceled.present) {
+      map['is_canceled'] = Variable<bool>(isCanceled.value);
+    }
+    if (isInitial.present) {
+      map['is_initial'] = Variable<bool>(isInitial.value);
+    }
     return map;
   }
 
@@ -2725,7 +2806,10 @@ class VisitsCompanion extends UpdateCompanion<Visit> {
           ..write('to: $to, ')
           ..write('weight: $weight, ')
           ..write('notes: $notes, ')
-          ..write('background: $background')
+          ..write('background: $background, ')
+          ..write('isDone: $isDone, ')
+          ..write('isCanceled: $isCanceled, ')
+          ..write('isInitial: $isInitial')
           ..write(')'))
         .toString();
   }

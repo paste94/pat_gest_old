@@ -34,33 +34,60 @@ class CrudService {
 
   Stream<Patient> getPatientStream({required int id}) {
     final db = _getDatabaseOrThrow();
-    return db.watchPatient(id);
+    Stream<Patient> stream = db.watchPatient(id);
+    return stream;
   }
 
   Future<void> open() async {
     _db ??= PatGestDatabase();
   }
 
+  /// This method lets you create a new patient on the database
   Future<int> createPatient({
-    required String surname,
     required String name,
-    required double height,
-    required double initialWeight,
+    required String surname,
     required DateTime dateOfBirth,
+    required double height,
     String? email,
     String? phoneNumber,
     String? notes,
   }) async {
     final db = _getDatabaseOrThrow();
-    return await db.into(db.patients).insert(PatientsCompanion(
-          name: Value(name),
-          surname: Value(surname),
-          email: Value.ofNullable(email),
-          phoneNumber: Value.ofNullable(phoneNumber),
-          notes: Value.ofNullable(notes),
-          height: Value(height),
-          initialWeight: Value(initialWeight),
-          dateOfBirth: Value(dateOfBirth),
-        ));
+    return await db.into(db.patients).insert(
+          PatientsCompanion(
+            name: Value(name),
+            surname: Value(surname),
+            dateOfBirth: Value(dateOfBirth),
+            height: Value(height),
+            email: Value(email),
+            phoneNumber: Value(phoneNumber),
+            notes: Value(notes),
+          ),
+        );
+  }
+
+  /// This method us ised to update a patient. The [newPatient] is an
+  /// instance of [Patient] with the same [id] field of the previous
+  /// patient but with some updated field.
+  Future<void> updatePatient(Patient newPatient) async {
+    final db = _getDatabaseOrThrow();
+    return await db.updatePatient(
+      id: newPatient.id,
+      newPatientsCompanion: PatientsCompanion(
+        id: Value(newPatient.id),
+        name: Value(newPatient.name),
+        surname: Value(newPatient.surname),
+        dateOfBirth: Value(newPatient.dateOfBirth),
+        height: Value(newPatient.height),
+        email: Value(newPatient.email),
+        phoneNumber: Value(newPatient.phoneNumber),
+        notes: Value(newPatient.notes),
+      ),
+    );
+  }
+
+  Future<void> deletePatient(int id) async {
+    final db = _getDatabaseOrThrow();
+    return await db.deletePatient(id: id);
   }
 }

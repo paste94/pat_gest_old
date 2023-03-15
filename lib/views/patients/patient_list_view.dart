@@ -43,6 +43,7 @@ class _PatientListViewState extends State<PatientListView> {
               padding: const EdgeInsets.all(10),
               itemCount: patientsList.length,
               itemBuilder: (context, index) {
+                print(patientsList[index]);
                 return Column(
                   children: [
                     ListTile(
@@ -52,6 +53,7 @@ class _PatientListViewState extends State<PatientListView> {
                       title: Text(
                           '${patientsList[index].name} ${patientsList[index].surname}'),
                       onTap: () {
+                        print(patientsList[index].id);
                         Navigator.of(context).pushNamed(
                           patientRoute,
                           arguments: patientsList[index].id,

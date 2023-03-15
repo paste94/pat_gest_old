@@ -39,6 +39,9 @@ class VisitsDataSource extends CalendarDataSource {
       to: appointment.endTime,
       isAllDay: false,
       background: Colors.blue,
+      isCanceled: false,
+      isDone: false,
+      isInitial: false,
     );
   }
 }

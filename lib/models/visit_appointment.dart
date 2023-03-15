@@ -8,7 +8,7 @@ class VisitAppointment extends Appointment {
       : super(
           startTime: visit.from,
           endTime: visit.to,
-          subject: visit.eventName ?? '',
+          subject: visit.eventName,
           // TODO: Rendilo impostabile dalle opzioni
           color: Colors.blue,
           startTimeZone: '',

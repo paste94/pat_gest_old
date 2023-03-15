@@ -34,6 +34,21 @@ class PatGestDatabase extends _$PatGestDatabase {
     return (select(patients)).watch();
   }
 
+  Future updatePatient({
+    required int id,
+    required PatientsCompanion newPatientsCompanion,
+  }) async {
+    return await (update(patients)
+          ..where(
+            (tbl) => tbl.id.equals(id),
+          ))
+        .write(newPatientsCompanion);
+  }
+
+  Future deletePatient({required int id}) async {
+    return await (delete(patients)..where((t) => t.id.equals(id))).go();
+  }
+
   Stream<Patient> watchPatient(int id) {
     return (select(patients)..where((tbl) => tbl.id.equals(id))).watchSingle();
   }
