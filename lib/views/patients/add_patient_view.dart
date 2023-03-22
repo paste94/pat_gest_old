@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pat_gest/constants/strings.dart';
+import 'package:pat_gest/constants/theme.dart';
 import 'package:pat_gest/services/crud_service.dart';
-import 'package:pat_gest/utils/patient_validator.dart';
+import 'package:pat_gest/utils/validator.dart';
 import 'package:pat_gest/utils/text_divider.dart';
 import 'package:intl/intl.dart';
 
@@ -22,7 +23,6 @@ class _AddPatientViewState extends State<AddPatientView> {
   final _initialWeightController = TextEditingController();
   final _dateController = TextEditingController(
       text: DateFormat(dateFormatConst).format(DateTime.now()));
-  final _spacing = 10.0;
   var _submitted = false;
 
   @override
@@ -46,7 +46,7 @@ class _AddPatientViewState extends State<AddPatientView> {
         child: Padding(
           padding: const EdgeInsets.all(15),
           child: Wrap(
-            runSpacing: _spacing,
+            runSpacing: spacingConst,
             children: [
               const TextDivider(text: 'Personal data'),
               Row(
@@ -63,7 +63,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                       ),
                     ),
                   ),
-                  SizedBox(width: _spacing),
+                  SizedBox(width: spacingConst),
                   Expanded(
                     child: TextField(
                       controller: _surnameController,
@@ -92,7 +92,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                       ),
                     ),
                   ),
-                  SizedBox(width: _spacing),
+                  SizedBox(width: spacingConst),
                   Expanded(
                     child: TextField(
                       controller: _phoneNumberController,
@@ -119,7 +119,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                       ),
                     ),
                   ),
-                  SizedBox(width: _spacing),
+                  SizedBox(width: spacingConst),
                   Expanded(
                     child: TextField(
                       controller: _dateController,
@@ -127,7 +127,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                         border: const OutlineInputBorder(),
                         labelText: 'Birth date*',
                         errorText: _submitted
-                            ? dateValidator(_dateController.text)
+                            ? birthDateValidator(_dateController.text)
                             : null,
                         suffixIcon: IconButton(
                           onPressed: () async {
@@ -174,7 +174,7 @@ class _AddPatientViewState extends State<AddPatientView> {
           if (nameValidator(_nameController.text) != null ||
               surnameValidator(_surnameController.text) != null ||
               emailValidator(_emailController.text) != null ||
-              dateValidator(_dateController.text) != null ||
+              birthDateValidator(_dateController.text) != null ||
               heightValidator(_heightController.text) != null) {
             loadPatient = false;
           }

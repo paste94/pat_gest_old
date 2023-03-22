@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 /// A list of methods to validate [Patient] object fields. When fields are
@@ -84,7 +85,10 @@ String? emailValidator(String email) {
 /// it must respect the dd/MM/yyyy format. This method also checks
 /// whether the patient birth date is between 1900 and the current
 /// date.
-String? dateValidator(String dateString) {
+String? birthDateValidator(String? dateString) {
+  if (dateString == null) {
+    return 'Date cannot be null';
+  }
   try {
     final date = DateFormat('dd/MM/yyyy').parse(dateString);
     if (date.year < 1900) {
@@ -94,6 +98,33 @@ String? dateValidator(String dateString) {
     }
   } on FormatException {
     return 'Date format not supported';
+  }
+  return null;
+}
+
+String? dateValidator(String? dateString) {
+  if (dateString == null) {
+    return 'Date cannot be null';
+  }
+  try {
+    final date = DateFormat('dd/MM/yyyy').parse(dateString);
+  } on FormatException {
+    return 'Date format not supported';
+  }
+  return null;
+}
+
+String? timeValidator(String? timeString) {
+  if (timeString == null || timeString == '--:--') {
+    return 'Time cannot be null';
+  }
+  try {
+    final time = TimeOfDay(
+      hour: int.parse(timeString.split(':')[0]),
+      minute: int.parse(timeString.split(':')[1]),
+    );
+  } on FormatException {
+    return 'Time format not supported';
   }
   return null;
 }

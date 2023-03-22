@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:pat_gest/constants/routes.dart';
 import 'package:pat_gest/constants/theme.dart';
+import 'package:pat_gest/db/drift_database.dart';
 import 'package:pat_gest/services/crud_service.dart';
 import 'package:pat_gest/utils/my_navigation_rail_destination.dart';
+import 'package:pat_gest/utils/pair.dart';
+import 'package:pat_gest/views/add_visit/add_visit_view.dart';
 import 'package:pat_gest/views/foods/foods_list_view.dart';
 import 'package:pat_gest/views/offices/offices_list_view.dart';
 import 'package:pat_gest/views/options/options_view.dart';
@@ -11,8 +14,6 @@ import 'package:pat_gest/views/patients/patient_list_view.dart';
 import 'package:pat_gest/views/patients/patient_view.dart';
 import 'package:pat_gest/views/splash_view.dart';
 import 'package:pat_gest/views/visits/visits_view.dart';
-
-import 'views/visits/add_visit_view.dart';
 
 final _destinations = <MyNavigationRailDestination>[
   MyNavigationRailDestination(
@@ -52,7 +53,19 @@ void main() {
     routes: {
       addPatientRoute: (context) => const AddPatientView(),
       patientRoute: (context) => const PatientView(),
-      addVisitRoute: (context) => const AddVisitView(),
+      //addVisitRoute: (context) => const AddVisitView(),
+    },
+    onGenerateRoute: (RouteSettings settings) {
+      if (settings.name == addVisitRoute) {
+        final args = settings.arguments as Pair<Patient?, DateTime?>?;
+        return MaterialPageRoute(
+          builder: ((context) => AddVisitView(
+                patient: args?.first,
+                dateTime: args?.second,
+              )),
+        );
+      }
+      return null;
     },
   ));
 }
@@ -75,28 +88,26 @@ class _HomePageState extends State<HomePage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return Scaffold(
-              // appBar: AppBar(
-              //   title: const Text('PatGest'),
-              // ),
-              body: Row(
-            children: <Widget>[
-              NavigationRail(
-                groupAlignment: -1,
-                onDestinationSelected: (int index) {
-                  setState(() {
-                    _selectedIndex = index;
-                    _selectedPage = _destinations[index].pageToLoad;
-                  });
-                },
-                labelType: NavigationRailLabelType.all,
-                destinations: _destinations,
-                selectedIndex: _selectedIndex,
-              ),
-              Expanded(
-                child: _selectedPage,
-              )
-            ],
-          ));
+            body: Row(
+              children: <Widget>[
+                NavigationRail(
+                  groupAlignment: -1,
+                  onDestinationSelected: (int index) {
+                    setState(() {
+                      _selectedIndex = index;
+                      _selectedPage = _destinations[index].pageToLoad;
+                    });
+                  },
+                  labelType: NavigationRailLabelType.all,
+                  destinations: _destinations,
+                  selectedIndex: _selectedIndex,
+                ),
+                Expanded(
+                  child: _selectedPage,
+                )
+              ],
+            ),
+          );
         } else {
           return const SplashView();
         }

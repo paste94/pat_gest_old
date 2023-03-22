@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pat_gest/constants/routes.dart';
 import 'package:pat_gest/constants/strings.dart';
 import 'package:pat_gest/constants/theme.dart';
 import 'package:pat_gest/db/drift_database.dart';
 import 'package:pat_gest/services/crud_service.dart';
 import 'package:pat_gest/utils/error_alert.dart';
+import 'package:pat_gest/utils/pair.dart';
 import 'package:pat_gest/utils/text_divider.dart';
 import 'package:pat_gest/views/error/error_view.dart';
 
@@ -188,11 +190,21 @@ class _PatientViewState extends State<PatientView> {
                     ),
                     style: _textColorStyle(context),
                   ),
-                  const TextDivider(text: 'Events'),
+                  const TextDivider(text: 'Visits'),
                   // TODO: Aggiungere elenco degli ultimi N eventi
                 ],
               ),
             ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            heroTag: 'addVisitTag',
+            onPressed: () {
+              Navigator.of(context).pushNamed(
+                addVisitRoute,
+                arguments: Pair<Patient?, DateTime?>(patient, null),
+              );
+            },
+            child: const Icon(Icons.add),
           ),
         );
       },
