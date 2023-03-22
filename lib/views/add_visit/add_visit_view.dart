@@ -6,6 +6,7 @@ import 'package:pat_gest/db/drift_database.dart';
 import 'package:pat_gest/services/crud_service.dart';
 import 'package:pat_gest/utils/error_alert.dart';
 import 'package:pat_gest/utils/validator.dart';
+import 'package:pat_gest/views/add_visit/visit_duration.dart';
 
 class AddVisitView extends StatefulWidget {
   final Patient? patient;
@@ -78,7 +79,9 @@ class _AddVisitViewState extends State<AddVisitView> {
                       builder: (context, snapshot) {
                         if (snapshot.hasError) {
                           showErrorAlert(
-                              context, 'Error while loading patients!');
+                            context,
+                            'Error while loading patients!',
+                          );
                         }
 
                         // Dropdown is enabled only if patient is null
@@ -289,27 +292,6 @@ class _AddVisitViewState extends State<AddVisitView> {
       }
     } catch (e) {
       _endTimeController.text = '--:--';
-    }
-  }
-}
-
-// This is the list of items in the dropdown
-enum VisitDuration {
-  oneHour,
-  halfAnHour,
-  custom,
-}
-
-// This is the extension that creates the string shown in the dropdown
-extension VisitDurationExtension on VisitDuration {
-  String get displayTitle {
-    switch (this) {
-      case VisitDuration.oneHour:
-        return 'One Hour';
-      case VisitDuration.halfAnHour:
-        return 'Half an hour';
-      case VisitDuration.custom:
-        return 'Custom';
     }
   }
 }
