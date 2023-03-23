@@ -95,4 +95,26 @@ class CrudService {
     final db = _getDatabaseOrThrow();
     return await db.deletePatient(id: id);
   }
+
+  Future<int> createVisit({
+    required Patient patient,
+    required DateTime from,
+    required DateTime to,
+    String? notes,
+    String? eventName,
+    bool? isInitial,
+  }) async {
+    final db = _getDatabaseOrThrow();
+    return await db.into(db.visits).insert(
+          VisitsCompanion(
+            patientId: Value(patient.id),
+            eventName: Value.ofNullable(eventName),
+            isAllDay: const Value(false),
+            from: Value(from),
+            to: Value(to),
+            notes: Value.ofNullable(notes),
+            isInitial: Value.ofNullable(isInitial),
+          ),
+        );
+  }
 }

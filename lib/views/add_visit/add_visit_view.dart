@@ -5,6 +5,7 @@ import 'package:pat_gest/constants/theme.dart';
 import 'package:pat_gest/db/drift_database.dart';
 import 'package:pat_gest/services/crud_service.dart';
 import 'package:pat_gest/utils/error_alert.dart';
+import 'package:pat_gest/utils/text_divider.dart';
 import 'package:pat_gest/utils/validator.dart';
 import 'package:pat_gest/views/add_visit/visit_duration.dart';
 
@@ -19,9 +20,11 @@ class AddVisitView extends StatefulWidget {
 
 class _AddVisitViewState extends State<AddVisitView> {
   Patient? _selectedPatient;
+  bool _isInitial = false;
   final _dateController = TextEditingController();
   final _startTimeController = TextEditingController();
   final _endTimeController = TextEditingController();
+  final _notesController = TextEditingController();
 
   bool _isSubmitted = false;
 
@@ -52,13 +55,13 @@ class _AddVisitViewState extends State<AddVisitView> {
     _startTimeController.addListener(_updateEndTime);
     _dateController.text =
         DateFormat(dateFormatConst).format(widget.dateTime ?? DateTime.now());
-    _startTimeController.text = '03:00';
+    _startTimeController.text = '00:00';
   }
 
   @override
   Widget build(BuildContext context) {
     // This variable enables the timepicker
-    bool _isEndTimePickerEnabled = _selectedEndTimeSelection != null
+    bool isEndTimePickerEnabled = _selectedEndTimeSelection != null
         ? _selectedEndTimeSelection == VisitDuration.custom
         : true;
 
@@ -70,9 +73,11 @@ class _AddVisitViewState extends State<AddVisitView> {
           child: Wrap(
             runSpacing: spacingConst,
             children: [
+              const TextDivider(text: 'Visit details'),
               Row(
                 children: [
                   Expanded(
+                    flex: 3,
                     // Select patient
                     child: FutureBuilder(
                       future: CrudService().getPatientsList(),
@@ -108,6 +113,11 @@ class _AddVisitViewState extends State<AddVisitView> {
                             enabled: isDropdownEnabled,
                             border: const OutlineInputBorder(),
                             labelText: 'Select patient',
+                            errorText: _isSubmitted
+                                ? (_selectedPatient == null
+                                    ? 'Patient must be selected'
+                                    : null)
+                                : null,
                           ),
                           items: dropdownMenuItems,
                           value: _selectedPatient,
@@ -117,6 +127,16 @@ class _AddVisitViewState extends State<AddVisitView> {
                               : null,
                         );
                       },
+                    ),
+                  ),
+                  SizedBox(width: spacingConst),
+                  Expanded(
+                    // First Visit
+                    child: CheckboxListTile(
+                      title: const Text('First visit'),
+                      value: _isInitial,
+                      onChanged: (bool? newValue) =>
+                          setState(() => _isInitial = newValue ?? false),
                     ),
                   ),
                 ],
@@ -181,8 +201,8 @@ class _AddVisitViewState extends State<AddVisitView> {
                     // End Visit
                     child: TextField(
                       controller: _endTimeController,
-                      enabled: _isEndTimePickerEnabled,
-                      style: _isEndTimePickerEnabled
+                      enabled: isEndTimePickerEnabled,
+                      style: isEndTimePickerEnabled
                           ? null
                           : TextStyle(color: Theme.of(context).disabledColor),
                       decoration: InputDecoration(
@@ -213,7 +233,25 @@ class _AddVisitViewState extends State<AddVisitView> {
                     ),
                   ),
                 ],
-              )
+              ),
+              const TextDivider(text: 'Notes'),
+              Row(
+                children: [
+                  Expanded(
+                    // Notes
+                    child: TextField(
+                      controller: _notesController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      minLines: 3,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Notes',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -221,16 +259,65 @@ class _AddVisitViewState extends State<AddVisitView> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'addVisitTag',
-        onPressed: () {
-          setState(() {
-            _isSubmitted = true;
-          });
-        },
+        onPressed: _loadPatient,
         label: const Row(
           children: [Icon(Icons.add), Text('Add')],
         ),
       ),
     );
+  }
+
+  void _loadPatient() async {
+    setState(() => _isSubmitted = true);
+    bool loadVisit = false;
+    if (dateValidator(_dateController.text) != null ||
+        timeValidator(_endTimeController.text) != null ||
+        timeValidator(_startTimeController.text) != null ||
+        _selectedPatient != null) {
+      loadVisit = true;
+    }
+
+    if (loadVisit) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) {
+            return const Dialog(
+              backgroundColor: Colors.white,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text('Loading...')
+                  ],
+                ),
+              ),
+            );
+          });
+
+      // Load data to database
+      await CrudService().createVisit(
+        patient: _selectedPatient!,
+        from: DateFormat('dd/MM/yyyy HH:mm')
+            .parse('${_dateController.text} ${_startTimeController.text}'),
+        to: DateFormat('dd/MM/yyyy HH:mm')
+            .parse('${_dateController.text} ${_endTimeController.text}'),
+        eventName: '${_selectedPatient!.name} ${_selectedPatient!.surname}',
+        isInitial: _isInitial,
+        notes: _notesController.text,
+      );
+
+      // close the dialog automatically
+      if (mounted) {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      }
+    }
   }
 
   void _openDateTimePicker(DateTime? initialDate) async {
